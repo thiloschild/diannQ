@@ -1,0 +1,16 @@
+@echo off
+
+rem source file:
+set raw_data_path=%1
+
+
+rem it's important that raw_data_path does not end with "\"
+for %%I in ("%raw_data_path%") do (
+    set folder=%%~nxI
+)
+
+echo.folder is: %folder%
+
+robocopy %raw_data_path% M:\test\%folder%\
+rem D:\software\venv\bin\run_acquisition.py "%folder%" "%2"
+rem C:\20230731_DIANN_Pipeline_Test_TS\code\enqueue.py "%folder%" "%2"

@@ -1,0 +1,5 @@
+snakemake
+tomli
+tomlkit
+redis
+rq
