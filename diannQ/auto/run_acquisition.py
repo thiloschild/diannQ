@@ -15,8 +15,6 @@ arg_str = " ".join(str(element) for element in args)
 args = arg_str.split()
 args.insert(0, "--f")
 
-print(args)
-
 
 conn = redis.Redis(host="192.168.1.176", port=6379)
 q = Queue(connection=conn)
