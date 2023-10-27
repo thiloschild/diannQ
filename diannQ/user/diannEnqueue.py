@@ -1,7 +1,7 @@
 import redis
 from rq import Queue
 import sys
-from diannQ_job import process_job
+from diannQ.diannQ_job import process_job
 
 
 # get all flags

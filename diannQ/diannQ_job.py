@@ -5,7 +5,7 @@ import tomlkit
 from rq import get_current_job
 
 
-def process_job(args):
+def process_job(args: list):
 
 
     job = get_current_job()

@@ -1,1 +1,23 @@
+import redis
+from rq import Queue
+import sys
+from diannQ.diannQ_job import process_job
 
+
+# get all flags
+args = sys.argv[1:]
+
+if args[1] == "":
+    args[1] = "--lib  --threads 32 --verbose 3 --out /root/workflow/diann_data/output/report.tsv --qvalue 0.01 --matrices --out-lib /root/workflow/diann_data/output/report-lib.tsv --gen-spec-lib --predictor --fasta /root/workflow/diann_data/fasta/20211011_UniProtKB_2021_03_9606HomoSapiens_Reviewed_20386entries_172contaminants.fasta --fasta-search --min-fr-mz 200 --max-fr-mz 1800 --met-excision --cut K*,R* --missed-cleavages 1 --min-pep-len 7 --max-pep-len 30 --min-pr-mz 300 --max-pr-mz 1800 --min-pr-charge 1 --max-pr-charge 4 --unimod4 --reanalyse --relaxed-prot-inf --pg-level 2 --species-genes"
+
+
+arg_str = " ".join(str(element) for element in args)
+args = arg_str.split()
+args.insert(0, "--f")
+
+print(args)
+
+
+conn = redis.Redis(host="192.168.1.176", port=6379)
+q = Queue(connection=conn)
+q.enqueue(process_job, args)
