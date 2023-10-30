@@ -4,3 +4,4 @@ tomlkit
 redis
 rq
 .
+pyrsync

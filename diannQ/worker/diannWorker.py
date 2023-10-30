@@ -5,7 +5,7 @@ import os
 from redis import Redis
 from rq import Worker, Queue, Connection
 
-from diannQ.diannQ_job import process_user_job
+from diannQ.diannQ_job import process_user_job, process_auto_job
 
 
 listen = ['default']
