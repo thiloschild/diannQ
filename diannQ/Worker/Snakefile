@@ -160,11 +160,11 @@ rule get_quant_file_from_server_or_mock_one:
 
 rule run_acquisition_pc_scheduled_diann:
     input:
-        "software/{diann_version}/diann",
+        "dianns/{diann_version}/diann",
         "data/{folder_or_file}.d",
     output:
         temp(directory("diann/{diann_version}/auto/{folder_or_file}.d")),
-        temp("diann/{diann_version}/auto/{folder_or_file}.d/{folder_or_file}.d.quant"),
+        temp("diann/{diann_version}/auto/{folder_or_file}.d.quant"),
     wildcard_constraints:
         extension="d|raw"
     run:
@@ -216,7 +216,7 @@ rule run_user_scheduled_diann:
     """
     input:
         "dianns/{diann_version}/diann", # thilo, your rule to create diann must provide this as output (a soft link will do)
-        lambda wildcards: parse_diann_user_config( f"{wildcards.task_id}.toml" )["inputs"],
+        lambda wildcards: parse_diann_user_config( f"tasks/{wildcards.task_id}.toml" )["inputs"],
     output:
         temp( directory("diann/{diann_version}/user/{task_id}") )
     run:

@@ -51,7 +51,7 @@ def process_job(args: list):
 
     print(config)
 
-    with open(f"{task_id}.toml", "w") as outfile: 
+    with open(f"tasks/{task_id}.toml", "w") as outfile: 
         tomlkit.dump(config, outfile)
 
     print("Config created...starting Snakemake pipeline")
