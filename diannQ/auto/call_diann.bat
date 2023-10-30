@@ -1,14 +1,8 @@
 @echo off
 
 rem source file:
+set fasta_type=%1
 set raw_data_path=%2
 
-rem it's important that raw_data_path does not end with "\"
-for %%I in ("%raw_data_path%") do (
-    set folder=%%~nxI
-)
-
-echo.folder is: %folder%
-
-robocopy %raw_data_path% M:\test\%folder%\
-run_acquisition.py "%folder%" "%1"
+rem add path to python env
+run_acquisition.py "%raw_data_path%" "%fasta_type%"
