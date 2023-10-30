@@ -1,0 +1,7 @@
+build/
+diannQ.egg-info/
+ve_diannQ/
+diannQ/__pycache__
+diannQ/auto/__pycache__
+diannQ/user/__pycache__
+diannQ/worker/__pycache__
