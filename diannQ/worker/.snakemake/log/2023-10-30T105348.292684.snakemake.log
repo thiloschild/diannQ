@@ -1,0 +1,7 @@
+Building DAG of jobs...
+MissingInputException in rule copy_user_scheduled_diann_outputs_to_the_server in file /root/diannQ/diannQ/worker/Snakefile, line 273:
+Missing input files for rule copy_user_scheduled_diann_outputs_to_the_server:
+    output: user/diann/1.8.1/test_task
+    wildcards: diann_version=1.8.1, task_id=test_task
+    affected files:
+        user

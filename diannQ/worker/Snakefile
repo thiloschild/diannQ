@@ -53,18 +53,18 @@ config = parse_config("pipeline_config.toml")
 # this is done to avoid calling snakemake with the final location from the user side:
 # the snakemake call should look like so:
 # snakemake -call server/diann/G2023
-# rule soft_link_server_location:
-#     output:
-#         user = directory("user"),
-#         auto = directory("auto"),
-#     run:
-#         try:
-#             for name, folder in output.items():
-#                 assert pathlib.Path(config[name]).exists(), f"Folder {config[name]} missing."
-#                 shell(f"ln -s {config[name]} {folder}")
-#         except AssertionError as e:
-#             show_traceback(e)
-#             raise e
+rule soft_link_server_location:
+    output:
+        user = directory("user"),
+        auto = directory("auto"),
+    run:
+        try:
+            for name, folder in output.items():
+                assert pathlib.Path(config[name]).exists(), f"Folder {config[name]} missing."
+                shell(f"ln -s {config[name]} {folder}")
+        except AssertionError as e:
+            show_traceback(e)
+            raise e
 
 
 
@@ -160,8 +160,9 @@ rule get_quant_file_from_server_or_mock_one:
 
 rule run_acquisition_pc_scheduled_diann:
     input:
-        "dianns/{diann_version}/diann",
-        "data/{folder_or_file}.d",
+        diann = "dianns/{diann_version}/diann",
+        raw_data = "data/{folder_or_file}.d",
+        fasta_file = "fasta/{fasta_type}.fasta",
     output:
         temp(directory("diann/{diann_version}/auto/{folder_or_file}.d")),
         temp("diann/{diann_version}/auto/{folder_or_file}.d.quant"),
@@ -169,6 +170,13 @@ rule run_acquisition_pc_scheduled_diann:
         extension="d|raw"
     run:
         import subprocess
+
+        if config["diann_threads"] == "auto":
+                    threads = os.cpu_count()
+                else:
+                    threads = int(config["diann_threads"])
+
+        args = f"--f {raw_data} --lib --threads {threads} --verbose 3 --out output/report.tsv --qvalue 0.01 --matrices --out-lib output/report-lib.tsv --gen-spec-lib --predictor --fasta {fasta_file} --fasta-search --min-fr-mz 200 --max-fr-mz 1800 --met-excision --cut K*,R* --missed-cleavages 1 --min-pep-len 7 --max-pep-len 30 --min-pr-mz 300 --max-pr-mz 1800 --min-pr-charge 1 --max-pr-charge 4 --unimod4 --reanalyse --relaxed-prot-inf --smart-profiling --peak-center --no-ifs-removal"
         # run diann: the script should be prepared so as to use one run
 
 
@@ -275,6 +283,7 @@ rule copy_user_scheduled_diann_outputs_to_the_server:
         "user",
         "diann/{diann_version}/user/{task_id}",
     output:
-        directory("user/diann/{diann_version}/{task_id}")
-    shell:
-        "cp -r {input[1]} {output}"
+        "user/diann/{diann_version}/{task_id}"
+    run:
+        shell("mkdir {params}")
+        shell("cp -r {input[1]} {params}")

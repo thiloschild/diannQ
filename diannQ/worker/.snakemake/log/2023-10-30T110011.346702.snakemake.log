@@ -1,0 +1,5 @@
+Building DAG of jobs...
+ChildIOException:
+File/directory is a child to another output:
+('/root/diannQ/diannQ/worker/user', soft_link_server_location)
+('/root/diannQ/diannQ/worker/user/diann/1.8.1/test_task', copy_user_scheduled_diann_outputs_to_the_server)
