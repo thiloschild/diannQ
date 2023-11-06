@@ -190,11 +190,10 @@ rule run_acquisition_pc_scheduled_diann:
                     threads = int(config["diann_threads"])
 
         args = f"--f {raw_folder_or_file} --lib --threads {threads} --verbose 3 --out output/report.tsv --qvalue 0.01 --matrices --out-lib output/report-lib.tsv --gen-spec-lib --predictor --fasta {fasta_file} --fasta-search --min-fr-mz 200 --max-fr-mz 1800 --met-excision --cut K*,R* --missed-cleavages 1 --min-pep-len 7 --max-pep-len 30 --min-pr-mz 300 --max-pr-mz 1800 --min-pr-charge 1 --max-pr-charge 4 --unimod4 --reanalyse --relaxed-prot-inf --smart-profiling --peak-center --no-ifs-removal"
+        
         # run diann: the script should be prepared so as to use one run
-
-        cmd = f"{input[0]} {args}" 
-
-        shell(f"mkdir diann/{wildcards.diann_version}/auto/{wildcards.task_id}")
+        cmd = f"{input[0]} {args}"
+        shell(f"mkdir diann/{wildcards.diann_version}/auto/{wildcards.task_id}") # create output folder
         subprocess.run(
             cmd,
             shell=True
