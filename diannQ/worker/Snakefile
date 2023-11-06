@@ -40,6 +40,9 @@ def show_traceback(e: Exception) -> None:
 @functools.lru_cache
 def parse_config(path_to_config: str) -> dict[str, typing.Any]:
     """Can add later more formats."""
+
+    print("here")
+
     with open(str(path_to_config), "rb") as f:
         data = tomli.load(f)
     return data
@@ -181,13 +184,13 @@ rule run_acquisition_pc_scheduled_diann:
     run:
         import subprocess
 
-        raw_folder_or_file = parse_diann_auto_config(f"{wildcards.task_id}.toml")["raw_folders_or_files"]
-        fasta_file = parse_diann_auto_config(f"{wildcards.task_id}.toml")["fasta_files"]
+        raw_folder_or_file = parse_diann_auto_config(f"tasks/{wildcards.task_id}.toml")["raw_folders_or_files"]
+        fasta_file = parse_diann_auto_config(f"tasks/{wildcards.task_id}.toml")["fasta_files"]
 
         if config["diann_threads"] == "auto":
-                    threads = os.cpu_count()
-                else:
-                    threads = int(config["diann_threads"])
+            threads = os.cpu_count()
+        else:
+            threads = int(config["diann_threads"])
 
         args = f"--f {raw_folder_or_file} --lib --threads {threads} --verbose 3 --out diann/{wildcards.diann_version}/auto/{wildcards.task_id}/report.tsv --qvalue 0.01 --matrices --out-lib diann/{wildcards.diann_version}/user/{wildcards.task_id}/report-lib.tsv --gen-spec-lib --predictor --fasta {fasta_file} --fasta-search --min-fr-mz 200 --max-fr-mz 1800 --met-excision --cut K*,R* --missed-cleavages 1 --min-pep-len 7 --max-pep-len 30 --min-pr-mz 300 --max-pr-mz 1800 --min-pr-charge 1 --max-pr-charge 4 --unimod4 --reanalyse --relaxed-prot-inf --smart-profiling --peak-center --no-ifs-removal"
         
@@ -255,9 +258,9 @@ rule run_user_scheduled_diann:
         # HERE THILO preps a proper cmd
         # parse_diann_user_config(f"{wildcards.task_id}.toml")["args"]# for running subprocess
 
-        args = parse_diann_user_config(f"{wildcards.task_id}.toml")["args"].split()
-        raw_folders_or_files = parse_diann_user_config(f"{wildcards.task_id}.toml")["raw_folders_or_files"]
-        fasta_files = parse_diann_user_config(f"{wildcards.task_id}.toml")["fasta_files"]
+        args = parse_diann_user_config(f"tasks/{wildcards.task_id}.toml")["args"].split()
+        raw_folders_or_files = parse_diann_user_config(f"tasks/{wildcards.task_id}.toml")["raw_folders_or_files"]
+        fasta_files = parse_diann_user_config(f"tasks/{wildcards.task_id}.toml")["fasta_files"]
         # modify args
 
         for i, arg in enumerate(args):

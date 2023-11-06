@@ -81,5 +81,9 @@ def process_user_job(args: list):
 
     print("Config created...starting Snakemake pipeline")
 
+    print("test")
+
+    subprocess.run("ls", shell=True)
+
     #subprocess.run(f"snakemake -call diann/{config['version']}/user/{task_id}", shell=True)
     subprocess.run(f"snakemake -call user/diann/{config['version']}/{task_id}", shell=True)
