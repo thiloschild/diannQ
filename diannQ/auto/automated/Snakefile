@@ -1,0 +1,83 @@
+"""
+Authors: Mateusz Lacki & Thilo Schild
+
+This Pipeline will check if a RAW file has been analized/analyze it.
+
+"""
+import tomli
+import functools
+import pathlib
+import typing
+import glob
+import redis
+from rq import Queue
+
+from diannQ.diannQ_job import process_auto_job
+
+
+
+def parse_config(path_to_config: str) -> dict[str, typing.Any]:
+    """Can add later more formats."""
+    with open(str(path_to_config), "rb") as f:
+        data = tomli.load(f)
+    return data
+
+
+@functools.lru_cache
+def parse_raw_folders() -> list[str]:
+    """
+    
+    """
+
+
+    # iterate over all raw folders
+    raw_locations = parse_config("../../worker/folder_locations.toml")
+    raw_folders = []
+
+    num = 0
+
+    # find all raw files/folders on the server
+    for instrument, locations in raw_locations.items():
+        if instrument == "M":
+            g = glob.glob(f"{locations[0]}/*.d")
+            for d in g:
+                d = pathlib.Path(d).stem
+                print(d)
+                if d[0] == instrument:
+                    raw_folders.append(d)
+                    num += 1
+                
+                if num >= 50:
+                    break
+        
+        
+    # convert the filepath to the path of a potential processed file
+    # -> this way this pipeline will only call the second pipeline if the file has not been processed yet
+
+    diann_version = "1.8.1"
+    raw_folders = [f"../../worker/auto/diann/{diann_version}/results/{pathlib.Path(raw_folder).stem}/" for raw_folder in raw_folders]
+
+
+    return raw_folders
+                
+        
+
+
+
+rule iterate_raw_folders:
+    input:
+        raw_data_folders = lambda wildcards: parse_raw_folders()
+
+
+rule enqueue:
+    output:
+        directory("../../worker/auto/diann/{diann_version}/results/{file_or_folder}"),
+        "../../worker/auto/diann/{diann_version}/quants/{file_or_folder}.d.quant"
+    run:
+        fasta_type = "human"
+
+        conn = redis.Redis(host="192.168.1.176", port=6379)
+        q = Queue(connection=conn)
+        q.enqueue(process_auto_job, wildcards.file_or_folder, fasta_type, job_timeout=7200)
+
+        
